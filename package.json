@@ -1,0 +1,16 @@
+{
+  "name": "spotify_quiz",
+  "version": "1.0.0",
+  "description": "Personalized Spotify friend quiz.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Adrian Jules Sales",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
