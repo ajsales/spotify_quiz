@@ -2,7 +2,7 @@
   "name": "spotify_quiz",
   "version": "1.0.0",
   "description": "Personalized Spotify friend quiz.",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -11,6 +11,9 @@
   "author": "Adrian Jules Sales",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "angular-route": "^1.8.2",
+    "angular-spotify": "^1.5.1",
+    "express": "^4.17.1",
+    "socket.io": "^3.0.1"
   }
 }

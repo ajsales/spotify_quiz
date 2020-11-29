@@ -1,0 +1,14 @@
+<div class="window">
+	<p>This is the game html!</p>
+	<p>Room id: {{ roomId }}</p>
+	<p>Players: {{ players.length }}</p>
+	<ul>
+		<div data-ng-repeat="player in players">
+			<li>
+				<p>{{ player.playerData.name }}</p>
+				<img ng-src="{{ user.image }}">
+			</li>
+		</div>
+		<button ng-click="startGame()" ng-show="showButton">Start Game</button>
+	</ul>
+</div>

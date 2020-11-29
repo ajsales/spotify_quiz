@@ -4,8 +4,9 @@
 	<head>
 		<link href="/public/style.css" rel="stylesheet"/>
 
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.js"></script>
+
+		<base href="/">
 	</head>
 	<body ng-app="SpotifyQuizApp">
 
@@ -14,12 +15,17 @@
 
 		<!-- Modules -->
 		<script src="app.js"></script>
+		<script src="angular-spotify/src/angular-spotify.js"></script>
+		<script src="angular-route/angular-route.js"></script>
+		<script src="socket.io/socket.io.js"></script>
 
 		<!-- Controllers -->
-
+		<script src="login/LoginController.js"></script>
+		<script src="callback/CallbackController.js"></script>
+		<script src="rooms/RoomsController.js"></script>
+		<script src="game/GameController.js"></script>
 
 		<!-- Services -->
-
 
 	</body>
 
