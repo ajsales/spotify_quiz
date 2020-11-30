@@ -40,7 +40,6 @@ app.controller('LoginController', function($scope, Spotify, $location) {
 
 			localStorage.setItem('user', JSON.stringify(user));
 			$location.path('/rooms');
-			$scope.apply();
 		})
 	};
 });
