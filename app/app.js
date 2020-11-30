@@ -29,6 +29,8 @@ app.config((SpotifyProvider) => {
 	SpotifyProvider.setClientId('aeac4f1243f347d0a8a020c150d78fd8');
 	if (location.host == 'localhost:8081') {
 		SpotifyProvider.setRedirectUri('http://localhost:8081/callback');
+	} else {
+		SpotifyProvider.setRedirectUri('https://spotify-friends-quiz.herokuapp.com/callback')
 	}
 	SpotifyProvider.setScope('user-read-private user-top-read');
 	
