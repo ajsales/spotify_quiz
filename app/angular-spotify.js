@@ -66,15 +66,15 @@
         }
 
         function openDialog (uri, name, options, cb) {
-          var win = $window.open(uri, name, options);
-          var interval = $window.setInterval(function () {
+          var win = window.open(uri, name, options);
+          var interval = window.setInterval(function () {
             try {
               if (!win || win.closed) {
-                $window.clearInterval(interval);
+                window.clearInterval(interval);
                 cb(win);
               }
             } catch (e) {}
-          }, 1000);
+          }, 2000);
           return win;
         }
 
