@@ -6,7 +6,7 @@
 		<div data-ng-repeat="player in players">
 			<li>
 				<p>{{ player.playerData.name }}</p>
-				<img ng-src="{{ player.image }}">
+				<img ng-src="{{ player.playerData.image }}">
 			</li>
 		</div>
 		<button ng-click="startGame()" ng-show="showButton">Start Game</button>
