@@ -66,11 +66,11 @@
         }
 
         function openDialog (uri, name, options, cb) {
-          var win = window.open(uri, name, options);
-          var interval = window.setInterval(function () {
+          var win = $window.open(uri, name, options);
+          var interval = $window.setInterval(function () {
             try {
               if (!win || win.closed) {
-                window.clearInterval(interval);
+                $window.clearInterval(interval);
                 cb(win);
               }
             } catch (e) {}
@@ -514,7 +514,6 @@
               'menubar=no,location=no,resizable=yes,scrollbars=yes,status=no,width=' + w + ',height=' + h + ',top=' + top + ',left=' + left,
               function () {
                 if (!authCompleted) {
-                  console.log('THIS IS THE ERROR: 1!');
                   deferred.reject();
                 }
               }
@@ -529,8 +528,6 @@
                 $window.removeEventListener('storage', storageChanged, false);
 
                 deferred.resolve(e.newValue);
-              } else {
-                console.log('THIS IS THE ERROR: 2!');
               }
             }
 
