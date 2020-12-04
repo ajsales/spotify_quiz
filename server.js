@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+var Spotify = require('spotify-web-api-js');
+var s = new Spotify();
 
 app.use(express.static('app'));
 app.use(express.static('public'));

@@ -1,4 +1,4 @@
-var app = angular.module('SpotifyQuizApp', ['ngRoute', 'spotify']);
+var app = angular.module('SpotifyQuizApp', ['ngRoute']);
 
 app.config(($routeProvider, $locationProvider) => {
 	$routeProvider
@@ -25,17 +25,9 @@ app.config(($routeProvider, $locationProvider) => {
 	$locationProvider.hashPrefix('');
 });
 
-app.config((SpotifyProvider) => {
-	SpotifyProvider.setClientId('aeac4f1243f347d0a8a020c150d78fd8');
-	
-	if (location.host == 'localhost:8081') {
-		SpotifyProvider.setRedirectUri('http://localhost:8081/callback');
-	} else {
-		SpotifyProvider.setRedirectUri('https://spotify-friends-quiz.herokuapp.com/callback');
-	}
-	SpotifyProvider.setScope('user-read-private user-top-read');
-	
-})
+app.factory('spotify', () => {
+	return new SpotifyWebApi();
+});
 
 app.factory('socket', () => {
 	const socket = io({transports: ['websocket'], upgrade: false});

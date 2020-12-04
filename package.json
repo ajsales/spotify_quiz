@@ -12,8 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "angular-route": "^1.8.2",
-    "angular-spotify": "^1.5.1",
     "express": "^4.17.1",
-    "socket.io": "^3.0.1"
+    "socket.io": "^3.0.1",
+    "spotify-web-api-js": "^1.5.1"
   }
 }
