@@ -30,6 +30,6 @@ app.factory('spotify', () => {
 });
 
 app.factory('socket', () => {
-	const socket = io({transports: ['websocket'], upgrade: false});
+	const socket = io();
 	return socket;
 });

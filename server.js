@@ -13,38 +13,44 @@ app.get('*', (req, res) => {
 	res.sendFile(__dirname + '/app/index.html');
 })
 
-var players = {};
+var players = [];
 
 io.on('connection', (socket) => {
 	console.log('A user connected!');
 
-	socket.on('joinRoom', (roomId, user) => {
+	socket.on('joinServer', (user) => {
 		const player = {'socketId': socket.id, 'playerData': user};
-		if (roomId in players) {
-			if (players[roomId].map(player => player.socketId).includes(socket.id)) {
-				socket.emit('currentPlayers', players[roomId]);
-				return;
-			}
-			players[roomId].push(player);
-		} else {
-			players[roomId] = [player];
+		players.push(player);
+	});
+
+	socket.on('joinRoom', (roomId, user) => {
+		console.log(socket.id + ' joined room ' + roomId);
+		if (!(socket.rooms.has(roomId))) {
+			socket.join(roomId);
 		}
-		socket.join(roomId);
-		socket.emit('currentPlayers', players[roomId]);
+		socket.rooms.forEach(room => {
+			if (!([socket.id, roomId].includes(room))) {
+				socket.to(room).emit('playerLeft', socketId);
+				socket.leave(room);
+			}
+		});
+		var currentSockets = io.sockets.adapter.rooms.get(roomId);
+		socket.emit('currentPlayers', players.filter(player => currentSockets.has(player.socketId)));
+		var player = {'socketId': socket.id, 'playerData': user};
 		socket.to(roomId).emit('newPlayer', player);
 	});
 
-	socket.on('disconnect', () => {
+	socket.on('currentRoomsRequest', () => {
+		socket.emit('currentRooms', Array.from(io.sockets.adapter.rooms.keys()));
+	})
+
+	socket.on('disconnecting', () => {
 		console.log('A user disconnected: ' + socket.id);
-		for(var roomId in players) {
-			const index = players[roomId].map(x => x.socketId).indexOf(socket.id);
-			if (index > -1) {
-				players[roomId].splice(index, 1);
-			  	io.to(roomId).emit('playerLeft', socket.id);
-			  	break;
-			}
-		}
-	});
+		socket.rooms.forEach(room => {
+			console.log(socket.id + ' leaving room ' + room);
+			socket.to(room).emit('playerLeft', socket.id);
+		});
+	})
 
 	socket.on('sendSong', (roomId, song) => {
 		console.log(`Playing song: ${song.name} by ${song.artists[0].name}`);
