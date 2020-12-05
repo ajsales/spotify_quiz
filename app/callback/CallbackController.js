@@ -7,7 +7,11 @@ app.controller('CallbackController', function($scope, spotify, $location) {
 
 	spotify.getMe().then((res) => {
 		user.name = res.display_name;
-		user.image = res.images[0].url;
+		if (res.images) {
+			user.image = res.images[0].url;
+		} else {
+			user.image = 'https://img.icons8.com/clouds/200/000000/spotify.png';
+		}
 
 		// Get user's top 10 recent songs.
 		return spotify.getMyTopTracks({limit: 10, time_range: 'short_term'});
