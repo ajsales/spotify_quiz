@@ -56,6 +56,12 @@ io.on('connection', (socket) => {
 		console.log(`Playing song: ${song.name} by ${song.artists[0].name}`);
 		io.to(roomId).emit('playSong', song);
 	})
+
+	socket.on('sendQuestion', (roomId, question) => {
+		console.log('Question time!');
+		io.to(roomId).emit('playSong', question.song);
+		io.to(roomId).emit('receiveQuestion', question);
+	})
 });
 
 
