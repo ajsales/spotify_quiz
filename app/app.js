@@ -29,7 +29,14 @@ app.factory('spotify', () => {
 	return new SpotifyWebApi();
 });
 
-app.factory('socket', () => {
-	const socket = io();
-	return socket;
+app.factory('Player', () => {
+	return Player;
+});
+
+app.factory('Song', () => {
+	return Song;
+})
+
+app.factory('Question', () => {
+	return Question;
 });

@@ -1,61 +1,73 @@
-app.controller('GameController', function($scope, $routeParams, socket, $location) {
+app.controller('GameController', function($scope, $routeParams, $location, $timeout, Player, spotify) {
 
-	const roomId = $routeParams.roomId;
-	const user = JSON.parse(localStorage.getItem('user'));
-	var gameStarted = false;
-	if (!user) {
-		$location.path('/');
+	var gameStarted;
+	var socket;
+	var myPlayer;
+	var currentAudio;
+
+	var init = function() {
+		$scope.playerData = JSON.parse(localStorage.getItem('playerData'));
+
+		if (!$scope.playerData) {
+			$location.path('/');
+		}
+
+		$scope.roomId = $routeParams.roomId;
+		$scope.players = [];
+		gameStarted = false;
+
+		socket = io('/game/' + $scope.roomId);
+		socket.emit('joinRoom', $scope.playerData);
+	}
+	init();
+
+	$scope.startGame = function() {
+		socket.emit('startQuestion');
 	}
 
-	$scope.roomId = roomId;
-	$scope.user = user;
-	$scope.players = [];
-
-	socket.on('connect', () => {
-		console.log('A player connected!');
-		socket.emit('joinServer', user);
-	});
-
-	socket.emit('joinRoom', roomId, user);
-
-	socket.on('currentPlayers', (players) => {
-		console.log('Loading current players...');
+	socket.on('currentPlayers', (playersObject) => {
+		var players = playersObject.map(player => Player.getPlayer(player));
 		players.forEach(player => {
-			if (!($scope.players.map(p => p.socketId).includes(player.socketId))) {
-				$scope.players.push(player);
-			}
-		});
-		toggleButton();
-		$scope.$apply();
+			addPlayer(player);
+		})
 	});
 
-	socket.on('newPlayer', (player) => {
-		console.log('A new player joined: ' + player.socketId);
-		if (!($scope.players.map(p => p.socketId).includes(player.socketId))) {
-			$scope.players.push(player);
-		}
-		$scope.$apply();
+	socket.on('newPlayer', (playerObject) => {
+		var player = Player.getPlayer(playerObject);
+		addPlayer(player);
 	});
 
 	socket.on('playerLeft', (socketId) => {
-		console.log('A player just left: ' + socketId);
-		$scope.players = $scope.players.filter(player => player.socketId != socketId);
-		toggleButton();
-		$scope.$apply();
+		removePlayer(socketId);
 	});
 
-	socket.on('playSong', (song) => {
-		console.log(`Currently playing ${song.name} by ${song.artists[0].name}`);
-		var audio = new Audio(song.preview_url);
-		audio.play();
-	})
+	socket.on('playSong', (songObject) => {
+		var song = new Song(song);
+		playSong(song);
+	});
 
-	socket.on('receiveQuestion', (question) => {
-		console.log('Received question.');
-		currentQuestion(question);
-	})
+	socket.on('sendQuestion', (questionObject) => {
+		playQuestion(Question.getQuestion(questionObject));
+	});
 
-	var toggleButton = function() {
+	function addPlayer(player) {
+		if (player.socketId = socket.id) {
+			myPlayer = player;
+		}
+		$scope.players.push(player);
+		console.log('New player added: ' + player.socketId);
+		toggleButton();	
+		$scope.$apply();
+	}
+
+	function removePlayer(socketId) {
+		$scope.players = $scope.players.filter(player => player.socketId != socketId);
+		console.log('Player left: ' + socketId);
+		$scope.$apply();
+		toggleButton();
+	}
+
+	function toggleButton() {
 		if ($scope.players[0].socketId == socket.id && !gameStarted) {
 			$scope.showButton = true;
 		} else {
@@ -63,56 +75,30 @@ app.controller('GameController', function($scope, $routeParams, socket, $locatio
 		}
 	}
 
-	$scope.startGame = function() {
-		console.log('Started a question.');
-		socket.emit('sendQuestion', roomId, new identifyPlayerQuestion('recent'));
+	function playSong(song) {
+		if (currentAudio) {
+			currentAudio.pause();
+		}
+		console.log('Playing song: ' + song.name + ' by ' + song.artist);
+		$scope.songImage = song.image;
+		$scope.song = song.name + ' by ' + song.artist;
+		if (song.previewUrl) {
+			currentAudio = new Audio(song.previewUrl);
+			currentAudio.play();
+			return true;
+		} else {
+			currentAudio = null;
+			return false;
+		}
 	}
 
-	function currentQuestion(question) {
-		console.log(question.song);
-		console.log(question.choices);
+	function playQuestion(question) {
+		playSong(question.song);
 		$scope.question = question.question;
+		$scope.questionImage = question.image;
 		$scope.choices = question.choices;
-		$scope.questionImage = getSongImage(question.song);
+		console.log('Starting question: ' + question.question);
 		$scope.$apply();
 	}
 
-	class identifyPlayerQuestion {
-		constructor(option) {
-			var songs = [];
-			$scope.players.forEach(player => {
-				songs.push(getRandomSong(player, option));
-			})
-			this.song = songs[Math.floor(Math.random() * songs.length)];
-			this.question = `Whose favorite ${option} song is ${this.song.name} by ${this.song.artists[0].name}?`
-			this.choices = $scope.players.map(player => player.playerData.name);
-			this.answers = $scope.players.filter(player => playerLikesSong(player, this.song, option));
-		}
-	}
-
-	function getRandomSong(player, option) {
-		var n = Math.floor(Math.random() * 10);
-		if (option == 'recent') {
-			return player.playerData.recent_songs[n];
-		} else if (option == 'alltime') {
-			return player.playerData.alltime_songs[n]
-		} else {
-			console.err('Not possible option.');
-		}
-	}
-
-	function playerLikesSong(player, song, option) {
-		if (option == 'recent') {
-			return player.playerData.recent_songs.includes(song);
-		} else if (option == 'alltime') {
-			return player.playerData.alltime_songs.includes(song);
-		} else {
-			console.err('Not possible option.');
-		}
-	}
-
-	function getSongImage(song) {
-		var images = song.album.images;
-		return images[Math.floor(Math.random() * images.length)].url;
-	}
 });

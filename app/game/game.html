@@ -5,8 +5,8 @@
 	<ul>
 		<div data-ng-repeat="player in players">
 			<li>
-				<p>{{ player.playerData.name }}</p>
-				<img ng-src="{{ player.playerData.image }}">
+				<p>{{ player.name }}</p>
+				<img ng-src="{{ player.profileImage }}">
 			</li>
 		</div>
 		<button ng-click="startGame()" ng-show="showButton">Start Game</button>

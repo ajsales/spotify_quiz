@@ -1,46 +1,61 @@
 app.controller('CallbackController', function($scope, spotify, $location) {
 
-	var token = $location.hash().split('&')[0].split('=')[1];
-	spotify.setAccessToken(token);
+	var token;
+	var playerData;
 
-	const user = {};
+	var init = async function() {
+		token = $location.hash().split('&')[0].split('=')[1];
+		spotify.setAccessToken(token);
 
-	spotify.getMe().then((res) => {
-		user.name = res.display_name;
-		if (res.images) {
-			user.image = res.images[0].url;
-		} else {
-			user.image = 'https://img.icons8.com/clouds/200/000000/spotify.png';
+		playerData = {};
+
+		try {
+			var response;
+
+			// Get player's profile name and image.
+			response = await spotify.getMe();
+			playerData.name = response.display_name;
+			if (response.images) {
+				playerData.profileImage = response.images[0].url;
+			} else {
+				playerData.profileImage = 'https://img.icons8.com/clouds/200/000000/spotify.png';
+			}
+
+			// Get player's favorite recent songs.
+			response = await spotify.getMyTopTracks({limit: 10, time_range: 'short_term'});
+			playerData.recentSongs = response.items;
+
+			// Get player's favorite all-time songs.
+			response = await spotify.getMyTopTracks({limit: 10, time_range: 'long_term'});
+			playerData.allTimeSongs = response.items;
+
+			// Get player's favorite recent artists and their top tracks.
+			response = await spotify.getMyTopArtists({limit: 10, time_range: 'short_term'});
+			playerData.recentArtists = response.items;
+			for (var i = 0; i < 10; i++) {
+				var artist = playerData.recentArtists[i];
+				response = await spotify.getArtistTopTracks(artist.id, 'US');
+				playerData.recentArtists[i].topTracks = response.tracks;
+			}
+
+			// Get player's favorite all-time artists and their top tracks.
+			response = await spotify.getMyTopArtists({limit: 10, time_range: 'long_term'});
+			playerData.allTimeArtists = response.items;
+			for (var i = 0; i < 10; i++) {
+				var artist = playerData.allTimeArtists[i];
+				response = await spotify.getArtistTopTracks(artist.id, 'US');
+				playerData.allTimeArtists[i].topTracks = response.tracks;
+			}
+
+			localStorage.setItem('playerData', JSON.stringify(playerData));
+
+			$location.hash('');
+			$location.path('/rooms');
+			$scope.$apply();
+		} catch (err) {
+			console.log(err);
 		}
+	}
+	init();
 
-		// Get user's top 10 recent songs.
-		return spotify.getMyTopTracks({limit: 10, time_range: 'short_term'});
-	}, (err) => console.log(err))
-	.then((res) => {
-		user.recent_songs = res.items;
-
-		// Get user's top 10 all-time songs.
-		return spotify.getMyTopTracks({limit: 10, time_range: 'long_term'});
-	}, (err) => console.log(err))
-	.then((res) => {
-		user.alltime_songs = res.items;
-
-		//Get user's top 10 recent artists.
-		return spotify.getMyTopArtists({limit: 10, time_range: 'short_term'});
-	}, (err) => console.log(err))
-	.then((res) => {
-		user.recent_artists = res.items;
-
-		//Get user's top 10 all-time artists.
-		return spotify.getMyTopArtists({limit: 10, time_range: 'long_term'});
-	}, (err) => console.log(err))
-	.then((res) => {
-		user.alltime_artists = res.items;
-
-		localStorage.setItem('user', JSON.stringify(user));
-
-		$location.hash('');
-		$location.path('/rooms');
-		$scope.$apply();
-	}, (err) => console.log(err))
 });

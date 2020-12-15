@@ -2,8 +2,10 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var Spotify = require('spotify-web-api-js');
-var s = new Spotify();
+var Player = require('./public/js/player').Player;
+var Question = require('./public/js/player').Question;
+var IdentifyFavoriteSong = require('./public/js/player').IdentifyFavoriteSong;
+var IdentifyFavoriteArtist = require('./public/js/player').IdentifyFavoriteArtist;
 
 app.use(express.static('app'));
 app.use(express.static('public'));
@@ -14,44 +16,64 @@ app.get('*', (req, res) => {
 })
 
 var players = [];
+var rooms = [];
 
-io.on('connection', (socket) => {
-	console.log('A user connected!');
+const roomsNamespace = io.of('/rooms');
+const gameNamespaces = io.of(/^\/game\/\w{20}$/)
 
-	socket.on('joinServer', (user) => {
-		const player = {'socketId': socket.id, 'playerData': user};
-		players.push(player);
-	});
+roomsNamespace.on('connection', (socket) => {
+	console.log('A player is on the rooms page!');
 
-	socket.on('joinRoom', (roomId, user) => {
-		console.log(socket.id + ' joined room ' + roomId);
-		if (!(socket.rooms.has(roomId))) {
-			socket.join(roomId);
-		}
-		socket.rooms.forEach(room => {
-			if (!([socket.id, roomId].includes(room))) {
-				socket.to(room).emit('playerLeft', socketId);
-				socket.leave(room);
-			}
-		});
-		var currentSockets = io.sockets.adapter.rooms.get(roomId);
-		socket.emit('currentPlayers', players.filter(player => currentSockets.has(player.socketId)));
-		var player = {'socketId': socket.id, 'playerData': user};
-		socket.to(roomId).emit('newPlayer', player);
-	});
+	roomsNamespace.emit('availableRooms', rooms);
 
-	socket.on('currentRoomsRequest', () => {
-		socket.emit('currentRooms', Array.from(io.sockets.adapter.rooms.keys()));
+	socket.on('createRoom', (roomId) => {
+		console.log('Room ' + roomId + ' is created.');
+		rooms.push(roomId);
 	})
+})
+
+gameNamespaces.on('connection', (socket) => {
+
+	const namespace = socket.nsp;
+	const roomId = namespace.name.substring(6);
+	console.log('A player connected to room ' + roomId);
+
+	socket.on('joinRoom', (playerData) => {
+		const player = new Player(socket.id, playerData);
+		if (!players.includes(player)) {
+			players.push(player);
+		}
+		namespace.allSockets().then((sockets) => {
+			var currentPlayers = players.filter(player => sockets.has(player.socketId));
+			socket.emit('currentPlayers', currentPlayers);
+			socket.broadcast.emit('newPlayer', player);
+		}, (err) => console.err(err));
+	});
 
 	socket.on('disconnecting', () => {
 		console.log('A user disconnected: ' + socket.id);
-		socket.rooms.forEach(room => {
-			console.log(socket.id + ' leaving room ' + room);
-			socket.to(room).emit('playerLeft', socket.id);
-		});
-	})
+		players.filter(player => player.socketId != socket.id);
+		socket.broadcast.emit('playerLeft', socket.id);
+	});
 
+	socket.on('sendSong', (song) => {
+		console.log('Playing song: ' + song.name + ' by ' + song.artist);
+		namespace.emit('playSong', song);
+	});
+
+	socket.on('startQuestion', () => {
+		namespace.allSockets().then((sockets) => {
+			var currentPlayers = players.filter(player => sockets.has(player.socketId));
+			var question = Question.randomQuestion(currentPlayers);
+			console.log('Starting question: ' + question.question);
+			namespace.emit('sendQuestion', question);
+		}, (err) => console.err(err));
+	});
+})
+
+io.on('connection', (socket) => {
+
+	/*
 	socket.on('sendSong', (roomId, song) => {
 		console.log(`Playing song: ${song.name} by ${song.artists[0].name}`);
 		io.to(roomId).emit('playSong', song);
@@ -62,6 +84,7 @@ io.on('connection', (socket) => {
 		io.to(roomId).emit('playSong', question.song);
 		io.to(roomId).emit('receiveQuestion', question);
 	})
+	*/
 });
 
 
