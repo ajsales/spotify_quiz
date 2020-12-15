@@ -4,8 +4,6 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var Player = require('./public/js/player').Player;
 var Question = require('./public/js/player').Question;
-var IdentifyFavoriteSong = require('./public/js/player').IdentifyFavoriteSong;
-var IdentifyFavoriteArtist = require('./public/js/player').IdentifyFavoriteArtist;
 
 app.use(express.static('app'));
 app.use(express.static('public'));
@@ -70,23 +68,6 @@ gameNamespaces.on('connection', (socket) => {
 		}, (err) => console.err(err));
 	});
 })
-
-io.on('connection', (socket) => {
-
-	/*
-	socket.on('sendSong', (roomId, song) => {
-		console.log(`Playing song: ${song.name} by ${song.artists[0].name}`);
-		io.to(roomId).emit('playSong', song);
-	})
-
-	socket.on('sendQuestion', (roomId, question) => {
-		console.log('Question time!');
-		io.to(roomId).emit('playSong', question.song);
-		io.to(roomId).emit('receiveQuestion', question);
-	})
-	*/
-});
-
 
 server.listen(process.env.PORT || 8081, () => {
 	console.log(`Listening on ${server.address().port}`);

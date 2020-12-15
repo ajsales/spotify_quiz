@@ -224,13 +224,19 @@ class Question {
 	}
 
 	static randomQuestion(players) {
-		var question = [IdentifyFavoriteSong, IdentifyFavoriteArtist][_randomInt(2)];
+		var questions = [
+			IdentifyPlayerFromSong,
+			IdentifyPlayerFromArtist,
+			IdentifyFavoriteSong,
+			IdentifyFavoriteArtist
+		];
+		var question = questions[_randomInt(questions.length)];
 		var option = ['recent', 'all-time'][_randomInt(2)];
 		return new question(players, option);
 	}
 }
 
-class IdentifyFavoriteSong extends Question {
+class IdentifyPlayerFromSong extends Question {
 	constructor(players, option) {
 		var songs;
 		if (option == 'recent') {
@@ -245,7 +251,53 @@ class IdentifyFavoriteSong extends Question {
 		var question = `Whose ${option} Top 10 favorite song is ${song.name} by ${song.artist}?`;
 		var choices = players.map(player => player.name);
 		var answers = players.filter(p => p.likesSong(song, option)).map(p => p.name);
-		super(question, choices, answers, song, song.image);
+		var image = song.image;
+		super(question, choices, answers, song, image);
+	}
+}
+
+class IdentifyPlayerFromArtist extends Question {
+	constructor(players, option) {
+		var artists;
+		if (option =='recent') {
+			artists = players.map(player => player.randomRecentArtist);
+		} else if (option =='all-time') {
+			artists = players.map(player => player.randomAllTimeArtist);
+		} else {
+			console.error('Option inputted is inccorect.');
+		}
+
+		var artist = artists[_randomInt(artists.length)];
+
+		var question = `Whose ${option} Top 10 favorite artist is ${artist.name}?`;
+		var choices = players.map(player => player.name);
+		var answers = players.filter(p => p.likesArtist(artist, option)).map(p => p.name);
+		var song = artist.randomSong;
+		var image = artist.image;
+		super(question, choices, answers, song, image);
+	}
+}
+
+class IdentifyFavoriteSong extends Question {
+	constructor(players, option) {
+		var songs;
+		if (option == 'recent') {
+			songs = players.map(player => player.randomRecentSong);
+		} else if (option == 'all-time') {
+			songs = players.map(player => player.randomAllTimeSong);
+		} else {
+			console.error('Option inputted is incorrect.');
+		}
+
+		var n = _randomInt(songs.length);
+		var player = players[n];
+
+		var question = `What is one of ${player.name}'s ${option} Top 10 songs?`
+		var choices = songs.map(song => `${song.name} by ${song.artist}`);
+		var answers = songs.filter(s => player.likesSong(s, option)).map(s => s.name);
+		var song = songs[_randomInt(songs.length)];
+		var image = player.profileImage;
+		super(question, choices, answers, song, image);
 	}
 }
 
@@ -260,12 +312,15 @@ class IdentifyFavoriteArtist extends Question {
 			console.error('Option inputted is inccorect.');
 		}
 
-		var artist = artists[_randomInt(artists.length)];
-		var question = `Whose ${option} Top 10 favorite artist is ${artist.name}?`;
-		var choices = players.map(player => player.name);
-		var answers = players.filter(p => p.likesArtist(artist, option)).map(p => p.name);
-		var song = artist.randomSong;
-		super(question, choices, answers, song, artist.image);
+		var n = _randomInt(artists.length);
+		var player = players[n];
+
+		var question = `What is one of ${player.name}'s ${option} Top 10 artists?`
+		var choices = artists.map(artist => artist.name);
+		var answers = artists.filter(a => player.likesArtist(a, option)).map(a => a.name);
+		var song = artists[_randomInt(artists.length)].randomSong;
+		var image = player.profileImage;
+		super(question, choices, answers, song, image);
 	}
 }
 
@@ -279,6 +334,4 @@ if (typeof exports === "object") {
 	module.exports.Player = Player;
 	module.exports.Song = Song;
 	module.exports.Question = Question;
-	module.exports.IdentifyFavoriteSong = IdentifyFavoriteSong;
-	module.exports.IdentifyFavoriteArtist = IdentifyFavoriteArtist;
 }

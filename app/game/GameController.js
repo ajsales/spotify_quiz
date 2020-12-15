@@ -97,8 +97,8 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		$scope.question = question.question;
 		$scope.questionImage = question.image;
 		$scope.choices = question.choices;
-		console.log('Starting question: ' + question.question);
 		$scope.$apply();
+		console.log('Starting question: ' + question.question);
 	}
 
 });
