@@ -1,4 +1,4 @@
-app.controller('CallbackController', function($scope, spotify, $location, $animate, $interval) {
+app.controller('CallbackController', function($scope, spotify, $location, $animate, $timeout) {
 
 	var token;
 	var playerData;
@@ -10,7 +10,7 @@ app.controller('CallbackController', function($scope, spotify, $location, $anima
 
 		var windowEl = angular.element(document.querySelector('.window'));
 		$animate.addClass(windowEl, 'typewriter').then(() => {
-			$interval(getSpotifyData, 1500);
+			$timeout(getSpotifyData, 1500);
 		}, (err) => {
 			console.log(err);
 		})

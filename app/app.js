@@ -4,11 +4,13 @@ app.config(($routeProvider, $locationProvider) => {
 	$routeProvider
 		.when('/', {
 			controller: 'LoginController',
-			templateUrl: 'login/login.html'
+			templateUrl: 'login/login.html',
+			css: 'css/login.css'
 		})
 		.when('/callback', {
 			controller:'CallbackController',
-			templateUrl: 'callback/callback.html'
+			templateUrl: 'callback/callback.html',
+			css: 'css/callback.css'
 		})
 		.when('/rooms', {
 			controller: 'RoomsController',
