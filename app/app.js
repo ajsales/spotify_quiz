@@ -1,4 +1,4 @@
-var app = angular.module('SpotifyQuizApp', ['ngRoute']);
+var app = angular.module('SpotifyQuizApp', ['ngRoute', 'ngAnimate']);
 
 app.config(($routeProvider, $locationProvider) => {
 	$routeProvider
