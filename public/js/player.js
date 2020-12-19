@@ -31,10 +31,12 @@ class Player {
 	 * @param {string} option The list from which to pick a song.
 	 */
 	pickRandomSong(option) {
-		var n = _randomInt(10);
+		var n;
 		if (option == 'recent') {
+			n = _randomInt(this.playerData.recentSongs.length)
 			return this.playerData.recentSongs[n];
 		} else if (option == 'all-time') {
+			n = _randomInt(this.playerData.allTimeSongs.length)
 			return this.playerData.allTimeSongs[n];
 		} else {
 			console.error('Option inputted is incorrect.');
@@ -61,10 +63,12 @@ class Player {
 	 * @param {string} option The list from which to pick an artist.
 	 */
 	pickRandomArtist(option) {
-		var n = _randomInt(10);
+		var n;
 		if (option == 'recent') {
+			n = _randomInt(this.playerData.recentArtists.length)
 			return this.playerData.recentArtists[n];
 		} else if (option == 'all-time') {
+			n = _randomInt(this.playerData.allTimeArtists.length)
 			return this.playerData.allTimeArtists[n];
 		} else {
 			console.error('Option inputted is incorrect.');

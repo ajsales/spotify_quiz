@@ -41,7 +41,7 @@ app.controller('CallbackController', function($scope, spotify, $location, $anima
 		// Get player's favorite recent artists and their top tracks.
 		response = await spotify.getMyTopArtists({limit: 10, time_range: 'short_term'});
 		playerData.recentArtists = response.items;
-		for (var i = 0; i < 10; i++) {
+		for (var i = 0; i < playerData.recentArtists.length; i++) {
 			var artist = playerData.recentArtists[i];
 			response = await spotify.getArtistTopTracks(artist.id, 'US');
 			playerData.recentArtists[i].topTracks = response.tracks;
@@ -50,7 +50,7 @@ app.controller('CallbackController', function($scope, spotify, $location, $anima
 		// Get player's favorite all-time artists and their top tracks.
 		response = await spotify.getMyTopArtists({limit: 10, time_range: 'long_term'});
 		playerData.allTimeArtists = response.items;
-		for (var i = 0; i < 10; i++) {
+		for (var i = 0; i < playerData.allTimeArtists.length; i++) {
 			var artist = playerData.allTimeArtists[i];
 			response = await spotify.getArtistTopTracks(artist.id, 'US');
 			playerData.allTimeArtists[i].topTracks = response.tracks;
