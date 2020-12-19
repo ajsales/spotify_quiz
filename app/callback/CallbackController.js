@@ -24,6 +24,7 @@ app.controller('CallbackController', function($scope, spotify, $location, $anima
 		// Get player's profile name and image.
 		response = await spotify.getMe();
 		playerData.name = response.display_name;
+		console.log(response);
 		if (response.images) {
 			playerData.profileImage = response.images[0].url;
 		} else {
