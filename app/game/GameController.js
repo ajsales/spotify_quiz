@@ -63,6 +63,9 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		if (player.socketId = socket.id) {
 			myPlayer = player;
 		}
+		if ($scope.players.includes(player)) {
+			return;
+		}
 		$scope.players.push(player);
 		console.log('New player added: ' + player.socketId);
 		toggleButton();	
