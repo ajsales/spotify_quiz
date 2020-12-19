@@ -34,7 +34,7 @@ gameNamespaces.on('connection', (socket) => {
 
 	const namespace = socket.nsp;
 	const roomId = namespace.name.substring(6);
-	console.log('A player connected to room ' + roomId);
+	console.log('Player ' + socket.id + ' connected to room ' + roomId);
 
 	socket.on('joinRoom', (playerData) => {
 		const player = new Player(socket.id, playerData);

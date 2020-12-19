@@ -60,7 +60,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 	});
 
 	function addPlayer(player) {
-		if (player.socketId = socket.id) {
+		if (player.socketId == socket.id) {
 			myPlayer = player;
 		}
 		if ($scope.players.includes(player)) {
