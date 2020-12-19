@@ -21,6 +21,15 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 	}
 	init();
 
+	$scope.copyToClipboard = function() {
+		const el = document.createElement('textarea');
+		el.value = $scope.roomId;
+		document.body.appendChild(el);
+		el.select();
+		document.execCommand('copy');
+		document.body.removeChild(el);
+	}
+
 	$scope.startGame = function() {
 		socket.emit('startQuestion');
 	}

@@ -4,13 +4,11 @@ app.config(($routeProvider, $locationProvider) => {
 	$routeProvider
 		.when('/', {
 			controller: 'LoginController',
-			templateUrl: 'login/login.html',
-			css: 'css/login.css'
+			templateUrl: 'login/login.html'
 		})
 		.when('/callback', {
 			controller:'CallbackController',
-			templateUrl: 'callback/callback.html',
-			css: 'css/callback.css'
+			templateUrl: 'callback/callback.html'
 		})
 		.when('/rooms', {
 			controller: 'RoomsController',
@@ -26,6 +24,7 @@ app.config(($routeProvider, $locationProvider) => {
 	$locationProvider.html5Mode(true);
 	$locationProvider.hashPrefix('');
 });
+
 
 app.factory('spotify', () => {
 	return new SpotifyWebApi();

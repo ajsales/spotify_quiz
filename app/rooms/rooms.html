@@ -1,6 +1,19 @@
 <div class="window">
-	<p>This is the rooms page!</p>
-	<button ng-click="createRoom()">Create</button>
-	<input type="text" ng-model="roomId">
-	<button ng-click="joinRoom()">Join</button>
+	<link href="css/rooms.css" rel="stylesheet"/>
+
+	<table>
+		<tr>
+			<th rowspan="2"><h1>Friends Quiz for <img ng-src="{{ spotifyLogo }}" id="spotify-logo"></h1></th>
+			<td rowspan="2" id="line-column"></td>
+			<td><button ng-click="createRoom()"><p>Create Room</p></button></td>
+		</tr>
+		<tr>
+			<td>
+				<input type="text" ng-model="roomId" placeholder="Room ID">
+				<button ng-click="joinRoom()" id="join-button"><p>Join Room</p></button>
+			</td>
+		</tr>
+	</table>
+		
+	</div>
 </div>

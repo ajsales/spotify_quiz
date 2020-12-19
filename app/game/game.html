@@ -1,20 +1,34 @@
 <div class="window">
-	<p>This is the game html!</p>
-	<p>Room id: {{ roomId }}</p>
-	<p>Players: {{ players.length }}</p>
-	<ul>
-		<div data-ng-repeat="player in players">
-			<li>
-				<p>{{ player.name }}</p>
-				<img ng-src="{{ player.profileImage }}">
-			</li>
-		</div>
-		<button ng-click="startGame()" ng-show="showButton">Start Game</button>
-	</ul>
+	<link href="css/game.css" rel="stylesheet"/>
 
-	<img ng-src="{{ questionImage }}">
-	<p>{{ question }}</p>
-	<div data-ng-repeat="choice in choices">
-		<button>{{ choice }}</button>
-	</div>
+	<table id="main-table">
+		<tr>
+			<th id="game-window">
+				<button ng-click="startGame()" ng-show="showButton">Start Game</button>
+				<img ng-src="{{ questionImage }}">
+				<p>{{ question }}</p>
+				<div data-ng-repeat="choice in choices">
+					<button>{{ choice }}</button>
+				</div>
+			</th>
+			<td id="line-column"></td>
+			<td id="player-column">
+				<table id="player-table">
+					<tr>
+						<td><button id="room-id" ng-click="copyToClipboard()">
+							<p>Room ID: {{ roomId }}</p>
+						</button></td>
+					</tr>
+					<tr data-ng-repeat="player in players track by $index">
+						<td class="player">
+							<p class="profile-name">
+								<img ng-src="{{ player.profileImage }}" class="profile-image">
+								{{ player.name }}
+							</p>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </div>

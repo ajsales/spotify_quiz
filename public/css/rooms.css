@@ -1,0 +1,102 @@
+html {
+	background: rgba(30, 215, 96, 1);
+}
+
+.window {
+	margin: 0;
+	width: 95%;
+	height: 90%;
+	text-align: center;
+	top: 50%;
+	left: 50%;
+	position: absolute;
+	-ms-transform: translate(-50%, -50%);
+  	transform: translate(-50%, -50%);
+
+  	background: rgba(25, 20, 20, 1);
+  	border-radius: 40px;
+
+  	padding: 20px;
+}
+
+table {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+	width: 100%;
+	height: 80%;
+	margin: auto;
+	table-layout: fixed;
+}
+
+#line-column {
+	width: 2px;
+	background-color: rgba(30, 215, 96, 1);
+	border: transparent;
+	border-radius: 2px;
+}
+
+
+#spotify-logo {
+	width: 200px;
+	height: auto;
+	vertical-align: -45%;
+}
+
+h1 {
+	color: white;
+	font-family: 'JetBrains Mono', monospace;
+	font-weight: 400;
+	margin: 0;
+}
+
+button {
+	background: rgba(30, 215, 96, 1);
+	border: transparent;
+	margin: 0;
+	border-radius: 20px;
+	cursor: pointer;
+	padding: 5px 10px;
+}
+
+button:hover {
+	background: rgba(30, 215, 96, 0.5);
+	animation: fadeOut 0.5s;
+}
+
+@keyframes fadeOut {
+	from { background: rgba(30, 215, 96, 1) }
+	to { background: rgba(30, 215, 96, 0.5) }
+}
+
+button:focus {
+	outline: none;
+}
+
+p {
+	color: white;
+	font-family: 'Lato', sans-serif;
+	margin: 4px;
+	font-size: 10px;
+	text-transform: uppercase;
+}
+
+input {
+	box-sizing: border-box;
+	background: none;
+	color: white;
+	font-family: 'Lato', sans-serif;
+	border: none;
+	border-bottom: 2px solid rgba(255, 255, 255, 1);
+}
+
+input:focus {
+	outline: none;
+}
+
+#join-button {
+	margin: 0 0 0 15px;
+	display: inline;
+}

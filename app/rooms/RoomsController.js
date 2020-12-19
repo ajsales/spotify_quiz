@@ -5,6 +5,7 @@ app.controller('RoomsController', function($scope, $location) {
 
 	var init = function() {
 		socket = io('/rooms');
+		$scope.spotifyLogo = 'img/Spotify_Logo_RGB_White.png';
 	}
 	init();
 
