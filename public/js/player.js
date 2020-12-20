@@ -167,6 +167,13 @@ class Song {
 		var images = this.song.album.images;
 		return images[0].url;
 	}
+
+	/**
+	 * Returns string representation for the song.
+	 */
+	toString() {
+		return this.name + ' by ' + this.artist;
+	}
 }
 
 class Artist {
@@ -215,7 +222,8 @@ class Question {
 	}
 
 	correctAnswer(answer) {
-		return anwsers.includes(answer);
+		console.log(this);
+		return this.answers.includes(answer);
 	}
 
 	static getQuestion(questionObj) {
@@ -252,7 +260,7 @@ class IdentifyPlayerFromSong extends Question {
 		}
 
 		var song = songs[_randomInt(songs.length)];
-		var question = `Whose ${option} Top 10 favorite song is ${song.name} by ${song.artist}?`;
+		var question = `Whose ${option} Top 10 favorite song is ${song.toString()}?`;
 		var choices = players.map(player => player.name);
 		var answers = players.filter(p => p.likesSong(song, option)).map(p => p.name);
 		var image = song.image;
@@ -297,8 +305,8 @@ class IdentifyFavoriteSong extends Question {
 		var player = players[n];
 
 		var question = `What is one of ${player.name}'s ${option} Top 10 songs?`
-		var choices = songs.map(song => `${song.name} by ${song.artist}`);
-		var answers = songs.filter(s => player.likesSong(s, option)).map(s => s.name);
+		var choices = songs.map(song => song.toString());
+		var answers = songs.filter(s => player.likesSong(s, option)).map(s => s.toString());
 		var song = songs[_randomInt(songs.length)];
 		var image = player.profileImage;
 		super(question, choices, answers, song, image);

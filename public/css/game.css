@@ -38,6 +38,22 @@ html {
 	border-bottom-left-radius: 40px;
 }
 
+.correct-answer {
+	background: rgba(30, 215, 96, 1);
+}
+
+.wrong-answer {
+	background: red;
+}
+
+.unknown-answer {
+	background: white;
+}
+
+.choice p {
+	
+}
+
 #line-column {
 	width: 5px;
 	background: rgba(30, 215, 96, 1);

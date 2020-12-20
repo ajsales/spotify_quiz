@@ -55,7 +55,7 @@ gameNamespaces.on('connection', (socket) => {
 	});
 
 	socket.on('sendSong', (song) => {
-		console.log('Playing song: ' + song.name + ' by ' + song.artist);
+		console.log('Playing song: ' + song.toString());
 		namespace.emit('playSong', song);
 	});
 

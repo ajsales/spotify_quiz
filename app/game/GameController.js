@@ -1,4 +1,4 @@
-app.controller('GameController', function($scope, $routeParams, $location, $timeout, Player, spotify) {
+app.controller('GameController', function($scope, $routeParams, $location, $timeout, Player, spotify, $document) {
 
 	var gameStarted;
 	var socket;
@@ -91,9 +91,9 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		if (currentAudio) {
 			currentAudio.pause();
 		}
-		console.log('Playing song: ' + song.name + ' by ' + song.artist);
+		console.log('Playing song: ' + song.toString());
 		$scope.songImage = song.image;
-		$scope.song = song.name + ' by ' + song.artist;
+		$scope.song = song.toString();
 		if (song.previewUrl) {
 			currentAudio = new Audio(song.previewUrl);
 			currentAudio.play();
@@ -108,9 +108,14 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		playSong(question.song);
 		$scope.question = question.question;
 		$scope.questionImage = question.image;
+		$scope.answers = question.answers;
 		$scope.choices = question.choices;
+		$scope.activeButtons = $scope.choices.map(() => false);
 		$scope.$apply();
 		console.log('Starting question: ' + question.question);
 	}
 
+	$scope.activateButton = function(index, choice) {
+		$scope.activeButtons[index] = true;
+	}
 });
