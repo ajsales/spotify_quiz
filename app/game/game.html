@@ -8,7 +8,7 @@
 				<img ng-src="{{ questionImage }}">
 				<p>{{ question }}</p>
 				<div data-ng-repeat="choice in choices track by $index">
-					<button ng-class="activeButtons[$index] ? (answers.includes(choice) ? 'correct-answer' : 'wrong-answer') : 'unknown-answer'" ng-click="activateButton($index, choice)" class="choice"><p>{{ choice }}</p></button>
+					<button ng-class="activeButtons? (answers.includes(choice) ? 'correct-answer' : 'wrong-answer') : 'unknown-answer'" ng-click="activateButtons()" class="choice"><p>{{ choice }}</p></button>
 				</div>
 			</th>
 			<td id="line-column"></td>

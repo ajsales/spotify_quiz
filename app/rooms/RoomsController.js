@@ -10,7 +10,6 @@ app.controller('RoomsController', function($scope, $location) {
 	init();
 
 	socket.on('availableRooms', (rooms) => {
-		console.log('Here are the available rooms: ' + rooms);
 		availableRooms = rooms;
 	})
 

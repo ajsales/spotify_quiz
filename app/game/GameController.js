@@ -109,13 +109,13 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		$scope.question = question.question;
 		$scope.questionImage = question.image;
 		$scope.answers = question.answers;
-		$scope.choices = question.choices;
-		$scope.activeButtons = $scope.choices.map(() => false);
+		$scope.choices = question.choices.concat(['Wrong answer!']);
+		$scope.activeButtons = false;
 		$scope.$apply();
 		console.log('Starting question: ' + question.question);
 	}
 
-	$scope.activateButton = function(index, choice) {
-		$scope.activeButtons[index] = true;
+	$scope.activateButtons = function() {
+		$scope.activeButtons = true;
 	}
 });

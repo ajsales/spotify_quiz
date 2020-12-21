@@ -96,13 +96,15 @@ class Player {
 	 * @param {string} option The favorite list to be checked.
 	 */
 	likesSong(song, option) {
+		var songs;
 		if (option == 'recent') {
-			return this.playerData.recentSongs.includes(song);
+			songs = this.playerData.recentSongs.map(s => s.toString());
 		} else if (option == 'all-time') {
-			return this.playerData.allTimeSongs.includes(song);
+			songs = this.playerData.allTimeSongs.map(s => s.toString());
 		} else {
 			console.error('Option inputted is incorrect.');
 		}
+		return songs.includes(song.toString());
 	}
 
 	/**
@@ -112,20 +114,54 @@ class Player {
 	 * @param {string} option The favorite list to be checked.
 	 */
 	likesArtist(artist, option) {
+		var artists;
 		if (option == 'recent') {
-			return this.playerData.recentArtists.includes(artist);
+			artists = this.playerData.recentArtists.map(a => a.name);
 		} else if (option == 'all-time') {
-			return this.playerData.allTimeArtists.includes(artist);
+			artists = this.playerData.allTimeArtists.map(a => a.name);
 		} else {
 			console.error('Option inputted is incorrect.');
 		}
+		return artists.includes(artist.name);
 	}
 
 	/**
-	 * Returns player from player object;
+	 * Returns player from player object.
+	 *
+	 * @param {Player} player
 	 */
 	static getPlayer(player) {
 		return new Player(player.socketId, player.playerData);
+	}
+
+	/**
+	 * Returns random songs from array of players.
+	 *
+	 * @param {Player[]} players
+	 * @param {string} option The list from which to pick songs.
+	 */
+	static getRandomSongs(players, option) {
+		var songs = new Set();
+		while (songs.size < players.length) {
+			var player = players[_randomInt(players.length)];
+			songs.add(player.pickRandomSong(option));
+		}
+		return [...songs];
+	}
+
+	/**
+	 * Returns random artists from array of players.
+	 *
+	 * @param {Player[]} players
+	 * @param {string} option The list from which to pick artists.
+	 */
+	static getRandomArtists(players, option) {
+		var artists = new Set();
+		while (artists.size < players.length) {
+			var player = players[_randomInt(players.length)];
+			artists.add(player.pickRandomArtist(option));
+		}
+		return [...artists];
 	}
 }
 
@@ -237,8 +273,8 @@ class Question {
 
 	static randomQuestion(players) {
 		var questions = [
-			IdentifyPlayerFromSong,
-			IdentifyPlayerFromArtist,
+			//IdentifyPlayerFromSong,
+			//IdentifyPlayerFromArtist
 			IdentifyFavoriteSong,
 			IdentifyFavoriteArtist
 		];
@@ -250,14 +286,7 @@ class Question {
 
 class IdentifyPlayerFromSong extends Question {
 	constructor(players, option) {
-		var songs;
-		if (option == 'recent') {
-			songs = players.map(player => player.randomRecentSong);
-		} else if (option == 'all-time') {
-			songs = players.map(player => player.randomAllTimeSong);
-		} else {
-			console.error('Option inputted is incorrect.');
-		}
+		var songs = Player.getRandomSongs(players, option);
 
 		var song = songs[_randomInt(songs.length)];
 		var question = `Whose ${option} Top 10 favorite song is ${song.toString()}?`;
@@ -270,15 +299,7 @@ class IdentifyPlayerFromSong extends Question {
 
 class IdentifyPlayerFromArtist extends Question {
 	constructor(players, option) {
-		var artists;
-		if (option =='recent') {
-			artists = players.map(player => player.randomRecentArtist);
-		} else if (option =='all-time') {
-			artists = players.map(player => player.randomAllTimeArtist);
-		} else {
-			console.error('Option inputted is inccorect.');
-		}
-
+		var artists = Player.getRandomArtists(players, option);
 		var artist = artists[_randomInt(artists.length)];
 
 		var question = `Whose ${option} Top 10 favorite artist is ${artist.name}?`;
@@ -292,17 +313,11 @@ class IdentifyPlayerFromArtist extends Question {
 
 class IdentifyFavoriteSong extends Question {
 	constructor(players, option) {
-		var songs;
-		if (option == 'recent') {
-			songs = players.map(player => player.randomRecentSong);
-		} else if (option == 'all-time') {
-			songs = players.map(player => player.randomAllTimeSong);
-		} else {
-			console.error('Option inputted is incorrect.');
-		}
-
-		var n = _randomInt(songs.length);
+		var n = _randomInt(players.length);
 		var player = players[n];
+		var songs = [player.pickRandomSong(option)];
+		var otherPlayers = players.slice(0, n).concat(players.slice(n + 1, players.length));
+		songs = songs.concat(Player.getRandomSongs(otherPlayers, option));
 
 		var question = `What is one of ${player.name}'s ${option} Top 10 songs?`
 		var choices = songs.map(song => song.toString());
@@ -315,17 +330,12 @@ class IdentifyFavoriteSong extends Question {
 
 class IdentifyFavoriteArtist extends Question {
 	constructor(players, option) {
-		var artists;
-		if (option =='recent') {
-			artists = players.map(player => player.randomRecentArtist);
-		} else if (option =='all-time') {
-			artists = players.map(player => player.randomAllTimeArtist);
-		} else {
-			console.error('Option inputted is inccorect.');
-		}
-
-		var n = _randomInt(artists.length);
+		var n = _randomInt(players.length);
 		var player = players[n];
+		var artists = [player.pickRandomArtist(option)];
+		var otherPlayers = players.slice(0, n).concat(players.slice(n + 1, players.length));
+		artists = artists.concat(Player.getRandomArtists(otherPlayers, option));
+
 
 		var question = `What is one of ${player.name}'s ${option} Top 10 artists?`
 		var choices = artists.map(artist => artist.name);

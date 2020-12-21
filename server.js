@@ -27,6 +27,7 @@ roomsNamespace.on('connection', (socket) => {
 	socket.on('createRoom', (roomId) => {
 		console.log('Room ' + roomId + ' is created.');
 		rooms.push(roomId);
+		roomsNamespace.emit('availableRooms', rooms);
 	})
 })
 
