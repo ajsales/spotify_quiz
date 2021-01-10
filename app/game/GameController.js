@@ -4,6 +4,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 	var socket;
 	var myPlayer;
 	var currentAudio;
+	var timer;
 
 	var init = function() {
 		$scope.playerData = JSON.parse(localStorage.getItem('playerData'));
@@ -111,11 +112,24 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		$scope.answers = question.answers;
 		$scope.choices = question.choices.concat(['Wrong answer!']);
 		$scope.activeButtons = false;
+		$scope.counter = 30;
+		$timeout.cancel(timer);
+		$scope.onTimeout = function() {
+			$scope.counter--;
+			if ($scope.counter > 0) {
+				timer = $timeout($scope.onTimeout, 1000);
+			} else {
+				$timeout.cancel(timer);
+				$scope.activateButtons();
+			}
+		}
+		timer = $timeout($scope.onTimeout, 1000);
 		$scope.$apply();
 		console.log('Starting question: ' + question.question);
 	}
 
 	$scope.activateButtons = function() {
+		$timeout.cancel(timer);
 		$scope.activeButtons = true;
 	}
 });
