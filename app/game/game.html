@@ -16,8 +16,9 @@
 			<td id="player-column">
 				<table id="player-table">
 					<tr>
-						<td><button id="room-id" ng-click="copyToClipboard()">
-							<p>Room ID: {{ roomId }}</p>
+						<td><button id="room-id" ng-click="copyToClipboard()"
+									data-tooltip="Click to copy!">
+							<p>ROOM ID: {{ roomId }}</p>
 						</button></td>
 					</tr>
 					<tr data-ng-repeat="player in players track by $index">
