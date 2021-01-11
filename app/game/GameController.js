@@ -128,8 +128,13 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		console.log('Starting question: ' + question.question);
 	}
 
-	$scope.activateButtons = function() {
+	$scope.activateButtons = function(choiceIndex) {
 		$timeout.cancel(timer);
 		$scope.activeButtons = true;
+		var choice = $scope.choices[choiceIndex];
+		if ($scope.answers.includes(choice)) {
+			var playerIndex = $scope.players.indexOf(myPlayer);
+			$scope.players[playerIndex].addPoints($scope.counter, choice);
+		}
 	}
 });

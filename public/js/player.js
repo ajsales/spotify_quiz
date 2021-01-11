@@ -8,6 +8,7 @@ class Player {
 		playerData.allTimeArtists = playerData.allTimeArtists.map(artist => new Artist(artist));
 		
 		this.playerData = playerData;
+		this.points = 0;
 	}
 
 	/**
@@ -101,10 +102,18 @@ class Player {
 			songs = this.playerData.recentSongs.map(s => s.toString());
 		} else if (option == 'all-time') {
 			songs = this.playerData.allTimeSongs.map(s => s.toString());
+		} else if (option == 'both') {
+			songs = this.playerData.recentSongs.map(s => s.toString());
+			songs = songs.concat(this.playerData.allTimeSongs.map(s => s.toString()));
 		} else {
 			console.error('Option inputted is incorrect.');
 		}
-		return songs.includes(song.toString());
+
+		if (typeof song == 'string') {
+			return songs.includes(song);
+		} else {
+			return songs.includes(song.toString());
+		}
 	}
 
 	/**
@@ -119,19 +128,45 @@ class Player {
 			artists = this.playerData.recentArtists.map(a => a.name);
 		} else if (option == 'all-time') {
 			artists = this.playerData.allTimeArtists.map(a => a.name);
+		} else if (option == 'both') {
+			artists = this.playerData.recentArtists.map(a => a.name);
+			artists = artists.concat(this.playerData.allTimeArtists.map(a => a.name));
 		} else {
 			console.error('Option inputted is incorrect.');
 		}
-		return artists.includes(artist.name);
+
+		if (typeof artist == 'string') {
+			return artists.includes(artist);
+		} else {
+			return artists.includes(artist.name);
+		}
+	}
+
+	/**
+	 * Adds points to player's score.
+	 *
+	 * @param {int} time The amount of time the player had left
+	 * @param {string} answer The answer the player gave
+	 */
+	addPoints(time, answer) {
+		var score = time;
+		if (!(this.likesSong(answer, 'both') ||
+			this.likesArtist(answer, 'both') ||
+			answer == this.name)) {
+			score *= 1.5;
+		}
+		this.points += score;
 	}
 
 	/**
 	 * Returns player from player object.
 	 *
-	 * @param {Player} player
+	 * @param {Player} playerObj
 	 */
-	static getPlayer(player) {
-		return new Player(player.socketId, player.playerData);
+	static getPlayer(playerObj) {
+		var player = new Player(playerObj.socketId, playerObj.playerData);
+		player.points = playerObj.points;
+		return player;
 	}
 
 	/**
@@ -273,8 +308,8 @@ class Question {
 
 	static randomQuestion(players) {
 		var questions = [
-			//IdentifyPlayerFromSong,
-			//IdentifyPlayerFromArtist
+			IdentifyPlayerFromSong,
+			IdentifyPlayerFromArtist,
 			IdentifyFavoriteSong,
 			IdentifyFavoriteArtist
 		];
