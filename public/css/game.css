@@ -38,6 +38,17 @@ html {
 	border-bottom-left-radius: 40px;
 }
 
+#question-image {
+	width: 350px;
+	height: auto;
+}
+
+#question {
+	color: rgba(25, 20, 20, 1);
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 1.2em;
+}
+
 #choices-container {
 	width: 100%;
     text-align: center;

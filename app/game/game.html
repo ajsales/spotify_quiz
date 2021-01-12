@@ -6,8 +6,8 @@
 		<tr>
 			<th id="game-window">
 				<button ng-click="startGame()" ng-show="showButton">Start Game</button>
-				<img ng-src="{{ questionImage }}">
-				<p>{{ question }}</p>
+				<img ng-src="{{ questionImage }}" id="question-image">
+				<p id="question">{{ question }}</p>
 				<div id="choices-container">
 					<button data-ng-repeat="choice in choices track by $index" ng-class="activeButtons? (answers.includes(choice) ? 'correct-answer' : 'wrong-answer') : 'unknown-answer'" ng-click="activateButtons($index)" class="choice"><p>{{ choice }}</p></button>
 				</div>

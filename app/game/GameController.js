@@ -129,12 +129,19 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 	}
 
 	$scope.activateButtons = function(choiceIndex) {
-		$timeout.cancel(timer);
-		$scope.activeButtons = true;
-		var choice = $scope.choices[choiceIndex];
-		if ($scope.answers.includes(choice)) {
-			var playerIndex = $scope.players.indexOf(myPlayer);
-			$scope.players[playerIndex].addPoints($scope.counter, choice);
+		if (!$scope.activeButtons) {
+			$timeout.cancel(timer);
+			$scope.activeButtons = true;
+			var choice = $scope.choices[choiceIndex];
+			var audio;
+			if ($scope.answers.includes(choice)) {
+				audio = new Audio('/wav/mixkit-correct-positive-answer-949.wav');
+				var playerIndex = $scope.players.indexOf(myPlayer);
+				$scope.players[playerIndex].addPoints($scope.counter, choice);
+			} else {
+				audio = new Audio('/wav/mixkit-wrong-answer-bass-buzzer-948.wav');
+			}
+			audio.play();
 		}
 	}
 });
