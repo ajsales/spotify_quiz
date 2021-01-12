@@ -141,6 +141,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 			} else {
 				audio = new Audio('/wav/mixkit-wrong-answer-bass-buzzer-948.wav');
 			}
+			currentAudio.pause();
 			audio.play();
 		}
 	}

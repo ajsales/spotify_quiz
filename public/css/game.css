@@ -39,6 +39,8 @@ html {
 }
 
 #question-image {
+	display: block;
+	margin: auto;
 	width: 350px;
 	height: auto;
 }
@@ -121,16 +123,17 @@ html {
 }
 
 .profile-image {
-	width: 60px;
+	width: 80px;
 	height: auto;
-	vertical-align: -110%;
-	border: 2px solid white;
-	border-radius: 20px;
+	vertical-align: -130%;
+	border: 2px solid rgba(30, 215, 96, 1);
+	border-radius: 100px;
 }
 
 .profile-name {
 	color: white;
 	font-family: 'JetBrains Mono', monospace;
 	font-size: 20px;
+	margin: 10px;
 }
 
