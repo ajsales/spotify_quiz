@@ -11,7 +11,7 @@
 				<div id="choices-container">
 					<button data-ng-repeat="choice in choices track by $index" ng-class="activeButtons? (answers.includes(choice) ? 'correct-answer' : 'wrong-answer') : 'unknown-answer'" ng-click="activateButtons($index)" class="choice"><p>{{ choice }}</p></button>
 				</div>
-				<h2>{{ counter }}</h2>
+				<h2 id="timer">{{ counter }}</h2>
 			</th>
 			<td id="line-column"></td>
 			<td id="player-column">
