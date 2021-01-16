@@ -354,6 +354,7 @@ class IdentifyFavoriteSong extends Question {
 		var songs = [player.pickRandomSong(option)];
 		var otherPlayers = players.slice(0, n).concat(players.slice(n + 1, players.length));
 		songs = songs.concat(Player.getRandomSongs(otherPlayers, option));
+		songs = songs.sort(() => Math.random() - 0.5);
 
 		var question = `What is one of ${player.name}'s ${option} Top 10 songs?`
 		var choices = songs.map(song => song.toString());
@@ -371,6 +372,7 @@ class IdentifyFavoriteArtist extends Question {
 		var artists = [player.pickRandomArtist(option)];
 		var otherPlayers = players.slice(0, n).concat(players.slice(n + 1, players.length));
 		artists = artists.concat(Player.getRandomArtists(otherPlayers, option));
+		artists = artists.sort(() => Math.random() - 0.5);
 
 
 		var question = `What is one of ${player.name}'s ${option} Top 10 artists?`
