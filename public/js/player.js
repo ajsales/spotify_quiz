@@ -156,6 +156,7 @@ class Player {
 			score *= 1.5;
 		}
 		this.points += score;
+		return score;
 	}
 
 	/**

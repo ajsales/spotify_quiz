@@ -60,6 +60,13 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		playQuestion(Question.getQuestion(questionObject));
 	});
 
+	socket.on('addPoints', (socketId, seconds, choice) => {
+		var playerIndex = $scope.players.map(player => player.socketId).indexOf(socketId);
+		var score = $scope.players[playerIndex].addPoints(seconds, choice);
+		console.log(socketId + ' got ' + score + ' points!');
+		$scope.$apply();
+	})
+
 	function addPlayer(player) {
 		if (player.socketId == socket.id) {
 			myPlayer = player;
@@ -136,8 +143,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 			var audio;
 			if ($scope.answers.includes(choice)) {
 				audio = new Audio('/wav/mixkit-correct-positive-answer-949.wav');
-				var playerIndex = $scope.players.indexOf(myPlayer);
-				$scope.players[playerIndex].addPoints($scope.counter, choice);
+				socket.emit('pointsRequest', $scope.counter, choice);
 			} else {
 				audio = new Audio('/wav/mixkit-wrong-answer-bass-buzzer-948.wav');
 			}

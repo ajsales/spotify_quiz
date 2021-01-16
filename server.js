@@ -68,6 +68,15 @@ gameNamespaces.on('connection', (socket) => {
 			namespace.emit('sendQuestion', question);
 		}, (err) => console.err(err));
 	});
+
+	socket.on('pointsRequest', (seconds, choice) => {
+		namespace.allSockets().then((sockets) => {
+			var playerIndex = players.map(player => player.socketId).indexOf(socket.id);
+			var score = players[playerIndex].addPoints(seconds, choice);
+			console.log(socket.id + ' got ' + score + ' points!');
+			namespace.emit('addPoints', socket.id, seconds, choice);
+		}, (err) => console.err(err));
+	})
 })
 
 server.listen(process.env.PORT || 8081, () => {
