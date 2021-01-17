@@ -1,3 +1,51 @@
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.helper = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const Song = require('./song');
+
+class Artist {
+	constructor(artist) {
+		if (artist.artist) {
+			this.artist = artist.artist;
+		} else {
+			this.artist = artist;
+		}
+
+		this.artist.topTracks = this.artist.topTracks.map(song => new Song(song));
+	}
+
+	/**
+	 * Returns the artist's name.
+	 */
+	get name() {
+		return this.artist.name;
+	}
+
+	/**
+	 * Returns an image for the artist.
+	 */
+	get image() {
+		var images = this.artist.images;
+		return images[0].url;
+	}
+
+	/**
+	 * Returns random song from artist.
+	 */
+	get randomSong() {
+		var songs = this.artist.topTracks;
+		var n = _randomInt(songs.length);
+		return songs[n];
+	}
+}
+
+function _randomInt(max) {
+	return Math.floor(Math.random() * max);
+}
+
+module.exports = Artist;
+},{"./song":4}],2:[function(require,module,exports){
+const Song = require('./song');
+const Artist = require('./artist');
+
 class Player {
 	constructor(socketId, playerData) {
 		this.socketId = socketId;
@@ -201,6 +249,127 @@ class Player {
 	}
 }
 
+function _randomInt(max) {
+	return Math.floor(Math.random() * max);
+}
+
+module.exports = Player;
+},{"./artist":1,"./song":4}],3:[function(require,module,exports){
+const Player = require('./player');
+const Song = require('./song');
+const Artist = require('./artist');
+
+class Question {
+	constructor(question, choices, answers, song, image) {
+		this.question = question;
+		this.choices = choices;
+		this.answers = answers;
+		this.song = song;
+		this.image = image;
+	}
+
+	correctAnswer(answer) {
+		console.log(this);
+		return this.answers.includes(answer);
+	}
+
+	static getQuestion(questionObj) {
+		var question = questionObj.question;
+		var choices = questionObj.choices;
+		var answers = questionObj.answers;
+		var song = new Song(questionObj.song);
+		var image = questionObj.image;
+		return new Question(question, choices, answers, song, image);
+	}
+
+	static randomQuestion(players) {
+		var questions = [
+			IdentifyPlayerFromSong,
+			IdentifyPlayerFromArtist,
+			IdentifyFavoriteSong,
+			IdentifyFavoriteArtist
+		];
+		var question = questions[_randomInt(questions.length)];
+		var option = ['recent', 'all-time'][_randomInt(2)];
+		return new question(players, option);
+	}
+}
+
+class IdentifyPlayerFromSong extends Question {
+	constructor(players, option) {
+		var songs = Player.getRandomSongs(players, option);
+
+		var song = songs[_randomInt(songs.length)];
+		while (!song.previewUrl) {
+			song = songs[_randomInt(songs.length)];
+		}
+		var question = `Whose ${option} Top 10 favorite song is ${song.toString()}?`;
+		var choices = players.map(player => player.name);
+		var answers = players.filter(p => p.likesSong(song, option)).map(p => p.name);
+		var image = song.image;
+		super(question, choices, answers, song, image);
+	}
+}
+
+class IdentifyPlayerFromArtist extends Question {
+	constructor(players, option) {
+		var artists = Player.getRandomArtists(players, option);
+		var artist = artists[_randomInt(artists.length)];
+
+		var question = `Whose ${option} Top 10 favorite artist is ${artist.name}?`;
+		var choices = players.map(player => player.name);
+		var answers = players.filter(p => p.likesArtist(artist, option)).map(p => p.name);
+		var song = artist.randomSong;
+		while (!song.previewUrl) {
+			song = artist.randomSong;
+		}
+		var image = artist.image;
+		super(question, choices, answers, song, image);
+	}
+}
+
+class IdentifyFavoriteSong extends Question {
+	constructor(players, option) {
+		var songs = Player.getRandomSongs(players, option);
+		var song = songs[_randomInt(songs.length)];
+		while (!song.previewUrl) {
+			song = songs[_randomInt(songs.length)];
+		}
+		var player = players.filter(p => p.likesSong(song, option))[0];
+
+		var question = `What is one of ${player.name}'s ${option} Top 10 songs?`
+		var choices = songs.map(song => song.toString());
+		var answers = songs.filter(s => player.likesSong(s, option)).map(s => s.toString());
+		song = songs[_randomInt(songs.length)];
+		var image = player.profileImage;
+		super(question, choices, answers, song, image);
+	}
+}
+
+class IdentifyFavoriteArtist extends Question {
+	constructor(players, option) {
+		var artists = Player.getRandomArtists(players, option);
+		var artist = artists[_randomInt(artists.length)];
+		var player = players.filter(p => p.likesArtist(artist, option))[0];
+
+		var question = `What is one of ${player.name}'s ${option} Top 10 artists?`
+		var choices = artists.map(artist => artist.name);
+		var answers = artists.filter(a => player.likesArtist(a, option)).map(a => a.name);
+		var song = artists[_randomInt(artists.length)].randomSong;
+		while (!song.previewUrl) {
+			song = artists[_randomInt(artists.length)].randomSong;
+		}
+		var image = player.profileImage;
+		super(question, choices, answers, song, image);
+	}
+}
+
+function _randomInt(max) {
+	return Math.floor(Math.random() * max);
+}
+
+module.exports = Question;
+},{"./artist":1,"./player":2,"./song":4}],4:[function(require,module,exports){
 class Song {
 	constructor(song) {
 		if (song.song) {
@@ -248,150 +417,11 @@ class Song {
 	}
 }
 
-class Artist {
-	constructor(artist) {
-		if (artist.artist) {
-			this.artist = artist.artist;
-		} else {
-			this.artist = artist;
-		}
-
-		this.artist.topTracks = this.artist.topTracks.map(song => new Song(song));
-	}
-
-	/**
-	 * Returns the artist's name.
-	 */
-	get name() {
-		return this.artist.name;
-	}
-
-	/**
-	 * Returns an image for the artist.
-	 */
-	get image() {
-		var images = this.artist.images;
-		return images[0].url;
-	}
-
-	/**
-	 * Returns random song from artist.
-	 */
-	get randomSong() {
-		var songs = this.artist.topTracks;
-		var n = _randomInt(songs.length);
-		return songs[n];
-	}
-}
-
-class Question {
-	constructor(question, choices, answers, song, image) {
-		this.question = question;
-		this.choices = choices;
-		this.answers = answers;
-		this.song = song;
-		this.image = image;
-	}
-
-	correctAnswer(answer) {
-		console.log(this);
-		return this.answers.includes(answer);
-	}
-
-	static getQuestion(questionObj) {
-		var question = questionObj.question;
-		var choices = questionObj.choices;
-		var answers = questionObj.answers;
-		var song = new Song(questionObj.song);
-		var image = questionObj.image;
-		return new Question(question, choices, answers, song, image);
-	}
-
-	static randomQuestion(players) {
-		var questions = [
-			IdentifyPlayerFromSong,
-			IdentifyPlayerFromArtist,
-			IdentifyFavoriteSong,
-			IdentifyFavoriteArtist
-		];
-		var question = questions[_randomInt(questions.length)];
-		var option = ['recent', 'all-time'][_randomInt(2)];
-		return new question(players, option);
-	}
-}
-
-class IdentifyPlayerFromSong extends Question {
-	constructor(players, option) {
-		var songs = Player.getRandomSongs(players, option);
-
-		var song = songs[_randomInt(songs.length)];
-		var question = `Whose ${option} Top 10 favorite song is ${song.toString()}?`;
-		var choices = players.map(player => player.name);
-		var answers = players.filter(p => p.likesSong(song, option)).map(p => p.name);
-		var image = song.image;
-		super(question, choices, answers, song, image);
-	}
-}
-
-class IdentifyPlayerFromArtist extends Question {
-	constructor(players, option) {
-		var artists = Player.getRandomArtists(players, option);
-		var artist = artists[_randomInt(artists.length)];
-
-		var question = `Whose ${option} Top 10 favorite artist is ${artist.name}?`;
-		var choices = players.map(player => player.name);
-		var answers = players.filter(p => p.likesArtist(artist, option)).map(p => p.name);
-		var song = artist.randomSong;
-		var image = artist.image;
-		super(question, choices, answers, song, image);
-	}
-}
-
-class IdentifyFavoriteSong extends Question {
-	constructor(players, option) {
-		var n = _randomInt(players.length);
-		var player = players[n];
-		var songs = [player.pickRandomSong(option)];
-		var otherPlayers = players.slice(0, n).concat(players.slice(n + 1, players.length));
-		songs = songs.concat(Player.getRandomSongs(otherPlayers, option));
-		songs = songs.sort(() => Math.random() - 0.5);
-
-		var question = `What is one of ${player.name}'s ${option} Top 10 songs?`
-		var choices = songs.map(song => song.toString());
-		var answers = songs.filter(s => player.likesSong(s, option)).map(s => s.toString());
-		var song = songs[_randomInt(songs.length)];
-		var image = player.profileImage;
-		super(question, choices, answers, song, image);
-	}
-}
-
-class IdentifyFavoriteArtist extends Question {
-	constructor(players, option) {
-		var n = _randomInt(players.length);
-		var player = players[n];
-		var artists = [player.pickRandomArtist(option)];
-		var otherPlayers = players.slice(0, n).concat(players.slice(n + 1, players.length));
-		artists = artists.concat(Player.getRandomArtists(otherPlayers, option));
-		artists = artists.sort(() => Math.random() - 0.5);
-
-
-		var question = `What is one of ${player.name}'s ${option} Top 10 artists?`
-		var choices = artists.map(artist => artist.name);
-		var answers = artists.filter(a => player.likesArtist(a, option)).map(a => a.name);
-		var song = artists[_randomInt(artists.length)].randomSong;
-		var image = player.profileImage;
-		super(question, choices, answers, song, image);
-	}
-}
-
-
-
-function _randomInt(max) {
-	return Math.floor(Math.random() * max);
-}
-
-if (typeof exports === "object") {
-	module.exports.Player = Player;
-	module.exports.Song = Song;
-	module.exports.Question = Question;
-}
+module.exports = Song;
+},{}],5:[function(require,module,exports){
+module.exports.Player = require('./classes/player');
+module.exports.Song = require('./classes/song');
+module.exports.Artist = require('./classes/artist');
+module.exports.Question = require('./classes/question');
+},{"./classes/artist":1,"./classes/player":2,"./classes/question":3,"./classes/song":4}]},{},[5])(5)
+});

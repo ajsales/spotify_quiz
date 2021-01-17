@@ -1,4 +1,4 @@
-app.controller('GameController', function($scope, $routeParams, $location, $timeout, Player, spotify, $document) {
+app.controller('GameController', function($scope, $routeParams, $location, $timeout, Player, Question, Song, spotify, $document) {
 
 	var gameStarted;
 	var socket;

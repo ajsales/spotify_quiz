@@ -31,13 +31,13 @@ app.factory('spotify', () => {
 });
 
 app.factory('Player', () => {
-	return Player;
+	return helper.Player;
 });
 
 app.factory('Song', () => {
-	return Song;
+	return helper.Song;
 })
 
 app.factory('Question', () => {
-	return Question;
+	return helper.Question;
 });

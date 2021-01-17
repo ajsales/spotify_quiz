@@ -2,8 +2,8 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var Player = require('./public/js/player').Player;
-var Question = require('./public/js/player').Question;
+var Player = require('./public/js/helper').Player;
+var Question = require('./public/js/helper').Question;
 
 app.use(express.static('app'));
 app.use(express.static('public'));
