@@ -26,6 +26,7 @@ class Song {
 	 */
 	get artist() {
 		var artists = this.song.artists.map(artist => artist.name);
+		artists = artists.filter(artist => !this.song.name.includes(artist));
 		return artists.join(', ')
 	}
 

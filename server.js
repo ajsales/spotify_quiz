@@ -24,9 +24,11 @@ roomsNamespace.on('connection', (socket) => {
 
 	roomsNamespace.emit('availableRooms', rooms);
 
-	socket.on('createRoom', (roomId) => {
+	socket.on('createRoom', (roomId, extraSongs, extraArtists) => {
 		console.log('Room ' + roomId + ' is created.');
 		rooms.push(roomId);
+		Question.setExtraSongs(extraSongs);
+		Question.setExtraArtists(extraArtists);
 		roomsNamespace.emit('availableRooms', rooms);
 	})
 })

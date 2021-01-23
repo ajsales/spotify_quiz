@@ -27,7 +27,7 @@ class Artist {
 	}
 
 	/**
-	 * Returns random song from artist.
+	 * Returns random song from artist or false.
 	 */
 	get randomSong() {
 		var songs = this.artist.topTracks;

@@ -2,6 +2,8 @@ app.controller('RoomsController', function($scope, $location) {
 
 	var availableRooms;
 	var socket;
+	var extraSongs;
+	var extraArtists;
 
 	var init = function() {
 		socket = io('/rooms');
@@ -14,7 +16,9 @@ app.controller('RoomsController', function($scope, $location) {
 	})
 
 	$scope.createRoom = function() {
-		socket.emit('createRoom', socket.id);
+		extraSongs = JSON.parse(localStorage.getItem('extraSongs'));
+		extraArtists = JSON.parse(localStorage.getItem('extraArtists'));
+		socket.emit('createRoom', socket.id, extraSongs, extraArtists);
 		$location.path('/game/' + socket.id);
 	};
 

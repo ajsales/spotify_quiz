@@ -56,7 +56,23 @@ app.controller('CallbackController', function($scope, spotify, $location, $anima
 			playerData.allTimeArtists[i].topTracks = response.tracks;
 		}
 
+		response = await spotify.getCategoryPlaylists('toplists', {country: 'US'});
+		var playlist = response.playlists.items.filter(p => p.name == 'United States Top 50')[0];
+		response = await spotify.getPlaylistTracks(playlist.id);
+		var songs = response.items.map(song => song.track);
+
+		var artists = [];
+		for (var i = 0; i < songs.length; i++) {
+			var artistId = songs[i].artists[0].id;
+			response = await spotify.getArtist(artistId);
+			var artist = response;
+			artist.topTracks = [songs[i]];
+			artists.push(artist);
+		}
+
 		localStorage.setItem('playerData', JSON.stringify(playerData));
+		localStorage.setItem('extraSongs', JSON.stringify(songs));
+		localStorage.setItem('extraArtists', JSON.stringify(artists));
 
 		$location.hash('');
 		$location.path('/rooms');

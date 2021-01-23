@@ -1,5 +1,6 @@
 app.controller('GameController', function($scope, $routeParams, $location, $timeout, Player, Question, Song, spotify, $document) {
 
+	var playerData;
 	var gameStarted;
 	var socket;
 	var myPlayer;
@@ -7,9 +8,9 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 	var timer;
 
 	var init = function() {
-		$scope.playerData = JSON.parse(localStorage.getItem('playerData'));
+		playerData = JSON.parse(localStorage.getItem('playerData'));
 
-		if (!$scope.playerData) {
+		if (!playerData) {
 			$location.path('/');
 		}
 
@@ -18,7 +19,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		gameStarted = false;
 
 		socket = io('/game/' + $scope.roomId);
-		socket.emit('joinRoom', $scope.playerData);
+		socket.emit('joinRoom', playerData);
 	}
 	init();
 

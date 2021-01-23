@@ -26,15 +26,31 @@ class Question {
 	}
 
 	static randomQuestion(players) {
-		var questions = [
-			IdentifyPlayerFromSong,
-			IdentifyPlayerFromArtist,
-			IdentifyFavoriteSong,
-			IdentifyFavoriteArtist
-		];
+		var questions;
+		if (players.length < 3) {
+			questions = [
+				IdentifyFavoriteSong,
+				IdentifyFavoriteArtist
+			];
+		} else {
+			questions = [
+				IdentifyPlayerFromSong,
+				IdentifyPlayerFromArtist,
+				IdentifyFavoriteSong,
+				IdentifyFavoriteArtist
+			]
+		}
 		var question = questions[_randomInt(questions.length)];
 		var option = ['recent', 'all-time'][_randomInt(2)];
 		return new question(players, option);
+	}
+
+	static setExtraSongs(songs) {
+		this.extraSongs = songs.map(song => new Song(song));
+	}
+
+	static setExtraArtists(artists) {
+		this.extraArtists = artists.map(artist => new Artist(artist));
 	}
 }
 
@@ -46,6 +62,7 @@ class IdentifyPlayerFromSong extends Question {
 		while (!song.previewUrl) {
 			song = songs[_randomInt(songs.length)];
 		}
+
 		var question = `Whose ${option} Top 10 favorite song is ${song.toString()}?`;
 		var choices = players.map(player => player.name);
 		var answers = players.filter(p => p.likesSong(song, option)).map(p => p.name);
@@ -74,10 +91,18 @@ class IdentifyPlayerFromArtist extends Question {
 class IdentifyFavoriteSong extends Question {
 	constructor(players, option) {
 		var songs = Player.getRandomSongs(players, option);
+
 		var song = songs[_randomInt(songs.length)];
 		while (!song.previewUrl) {
 			song = songs[_randomInt(songs.length)];
 		}
+
+		while (songs.length < 4) {
+			var randomSong = Question.extraSongs[_randomInt(Question.extraSongs.length)];
+			songs.push(randomSong);
+		}
+		songs = _shuffle(songs);
+
 		var player = players.filter(p => p.likesSong(song, option))[0];
 
 		var question = `What is one of ${player.name}'s ${option} Top 10 songs?`
@@ -95,11 +120,17 @@ class IdentifyFavoriteArtist extends Question {
 		var artist = artists[_randomInt(artists.length)];
 		var player = players.filter(p => p.likesArtist(artist, option))[0];
 
+		while (artists.length < 4) {
+			var randomArtist = Question.extraArtists[_randomInt(Question.extraArtists.length)];
+			artists.push(randomArtist);
+		}
+		artists = _shuffle(artists);
+
 		var question = `What is one of ${player.name}'s ${option} Top 10 artists?`
 		var choices = artists.map(artist => artist.name);
 		var answers = artists.filter(a => player.likesArtist(a, option)).map(a => a.name);
 		var song = artists[_randomInt(artists.length)].randomSong;
-		while (!song.previewUrl) {
+		while (!song || !song.previewUrl) {
 			song = artists[_randomInt(artists.length)].randomSong;
 		}
 		var image = player.profileImage;
@@ -109,6 +140,25 @@ class IdentifyFavoriteArtist extends Question {
 
 function _randomInt(max) {
 	return Math.floor(Math.random() * max);
+}
+
+function _shuffle(array) {
+  	var currentIndex = array.length, temporaryValue, randomIndex;
+
+  	// While there remain elements to shuffle...
+  	while (0 !== currentIndex) {
+
+   		// Pick a remaining element...
+   	 	randomIndex = Math.floor(Math.random() * currentIndex);
+   	 	currentIndex -= 1;
+
+   	 	// And swap it with the current element.
+   	 	temporaryValue = array[currentIndex];
+   	 	array[currentIndex] = array[randomIndex];
+   	 	array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
 
 module.exports = Question;
