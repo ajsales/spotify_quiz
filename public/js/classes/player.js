@@ -181,7 +181,7 @@ class Player {
 	 */
 	static getRandomSongs(players, option) {
 		var songs = new Set();
-		while (songs.size < players.length) {
+		while (songs.size < Math.min(players.length, 4)) {
 			var player = players[_randomInt(players.length)];
 			songs.add(player.pickRandomSong(option));
 		}
@@ -196,11 +196,26 @@ class Player {
 	 */
 	static getRandomArtists(players, option) {
 		var artists = new Set();
-		while (artists.size < players.length) {
+		while (artists.size < Math.min(players.length, 4)) {
 			var player = players[_randomInt(players.length)];
 			artists.add(player.pickRandomArtist(option));
 		}
 		return [...artists];
+	}
+
+	/**
+	 * Returns random 4 players from set.
+	 *
+	 * @param {Player[]} players
+	 * @param {string} included Player to include (i.e. the answer).
+	 */
+	static getRandomPlayers(players, included) {
+		var result = new Set([included]);
+		while (result.size < 4) {
+			var player = players[_randomInt(players.length)];
+			result.add(player.name);
+		}
+		return [...players];
 	}
 }
 

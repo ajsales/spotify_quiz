@@ -41,8 +41,8 @@ html {
 #question-image {
 	display: block;
 	margin: auto;
-	width: auto;
-	height: 350px;
+	max-width: 35%;
+	height: auto;
 }
 
 #question {

@@ -117,8 +117,8 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		playSong(question.song);
 		$scope.question = question.question;
 		$scope.questionImage = question.image;
-		$scope.answers = question.answers.concat(['Correct answer!']);
-		$scope.choices = question.choices.concat(['Wrong answer!', 'Correct answer!']);
+		$scope.answers = question.answers;
+		$scope.choices = question.choices;
 		$scope.activeButtons = false;
 		$scope.counter = 30;
 		$timeout.cancel(timer);

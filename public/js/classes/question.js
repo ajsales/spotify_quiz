@@ -27,7 +27,7 @@ class Question {
 
 	static randomQuestion(players) {
 		var questions;
-		if (players.length < 3) {
+		if (players.length < 4) {
 			questions = [
 				IdentifyFavoriteSong,
 				IdentifyFavoriteArtist
@@ -38,7 +38,7 @@ class Question {
 				IdentifyPlayerFromArtist,
 				IdentifyFavoriteSong,
 				IdentifyFavoriteArtist
-			]
+			];
 		}
 		var question = questions[_randomInt(questions.length)];
 		var option = ['recent', 'all-time'][_randomInt(2)];
@@ -64,8 +64,8 @@ class IdentifyPlayerFromSong extends Question {
 		}
 
 		var question = `Whose ${option} Top 10 favorite song is ${song.toString()}?`;
-		var choices = players.map(player => player.name);
 		var answers = players.filter(p => p.likesSong(song, option)).map(p => p.name);
+		var choices = Player.getRandomPlayers(players, answers[_randomInt(answers.length)]);
 		var image = song.image;
 		super(question, choices, answers, song, image);
 	}
@@ -77,8 +77,8 @@ class IdentifyPlayerFromArtist extends Question {
 		var artist = artists[_randomInt(artists.length)];
 
 		var question = `Whose ${option} Top 10 favorite artist is ${artist.name}?`;
-		var choices = players.map(player => player.name);
 		var answers = players.filter(p => p.likesArtist(artist, option)).map(p => p.name);
+		var choices = Player.getRandomPlayers(players, answers[_randomInt(answers.length)]);
 		var song = artist.randomSong;
 		while (!song.previewUrl) {
 			song = artist.randomSong;
@@ -99,7 +99,9 @@ class IdentifyFavoriteSong extends Question {
 
 		while (songs.length < 4) {
 			var randomSong = Question.extraSongs[_randomInt(Question.extraSongs.length)];
-			songs.push(randomSong);
+			if (!songs.includes(randomSong)) {
+				songs.push(randomSong);
+			}
 		}
 		songs = _shuffle(songs);
 
@@ -122,7 +124,9 @@ class IdentifyFavoriteArtist extends Question {
 
 		while (artists.length < 4) {
 			var randomArtist = Question.extraArtists[_randomInt(Question.extraArtists.length)];
-			artists.push(randomArtist);
+			if (!artists.includes(randomArtist)) {
+				artists.push(randomArtist);
+			}
 		}
 		artists = _shuffle(artists);
 
