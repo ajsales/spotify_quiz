@@ -260,7 +260,7 @@ class Player {
 			var player = players[_randomInt(players.length)];
 			result.add(player.name);
 		}
-		return [...players];
+		return [...result];
 	}
 }
 
