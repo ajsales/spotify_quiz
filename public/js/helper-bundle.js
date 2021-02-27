@@ -240,12 +240,15 @@ class Player {
 	 * @param {string} option The list from which to pick artists.
 	 */
 	static getRandomArtists(players, option) {
-		var artists = new Set();
-		while (artists.size < Math.min(players.length, 4)) {
+		var artists = [];
+		while (artists.length < Math.min(players.length, 4)) {
 			var player = players[_randomInt(players.length)];
-			artists.add(player.pickRandomArtist(option));
+			var artist = player.pickRandomArtist(option)
+			if (!artists.map(a => a.name).includes(artist.name)) {
+				artists.push(artist);
+			}
 		}
-		return [...artists];
+		return artists;
 	}
 
 	/**
@@ -260,12 +263,32 @@ class Player {
 			var player = players[_randomInt(players.length)];
 			result.add(player.name);
 		}
-		return [...result];
+		result = _shuffle([...result]);
+		return result;
 	}
 }
 
 function _randomInt(max) {
 	return Math.floor(Math.random() * max);
+}
+
+function _shuffle(array) {
+  	var currentIndex = array.length, temporaryValue, randomIndex;
+
+  	// While there remain elements to shuffle...
+  	while (0 !== currentIndex) {
+
+   		// Pick a remaining element...
+   	 	randomIndex = Math.floor(Math.random() * currentIndex);
+   	 	currentIndex -= 1;
+
+   	 	// And swap it with the current element.
+   	 	temporaryValue = array[currentIndex];
+   	 	array[currentIndex] = array[randomIndex];
+   	 	array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
 
 module.exports = Player;
