@@ -15,23 +15,16 @@
 			</th>
 			<td id="line-column"></td>
 			<td id="player-column">
-				<table id="player-table">
-					<tr>
-						<td><button id="room-id" ng-click="copyToClipboard()"
-									data-tooltip="Click to copy!">
+				<div>
+					<button id="room-id" ng-click="copyToClipboard()"
+							data-tooltip="Click to copy!">
 							<p>ROOM ID: {{ roomId }}</p>
-						</button></td>
-					</tr>
-					<tr data-ng-repeat="player in players track by $index">
-						<td class="player">
-							<p class="profile-name">
-								<img ng-src="{{ player.profileImage }}" class="profile-image">
-								{{ player.name }}:
-								{{ player.points }}
-							</p>
-						</td>
-					</tr>
-				</table>
+					</button>
+				</div>
+				<span data-ng-repeat="player in players track by $index" class="player">
+					<img ng-src="{{ player.profileImage}}" class="profile-image">
+					<span class="player-name">{{ player.name }}</span>
+				</span>
 			</td>
 		</tr>
 	</table>
