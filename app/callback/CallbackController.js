@@ -57,7 +57,8 @@ app.controller('CallbackController', function($scope, spotify, $location, $anima
 		}
 
 		response = await spotify.getCategoryPlaylists('toplists', {country: 'US'});
-		var playlist = response.playlists.items.filter(p => p.name == 'United States Top 50')[0];
+		console.log(response.playlists.items.map(p => p.name));
+		var playlist = response.playlists.items.filter(p => p.name == 'Top 50 - USA')[0];
 		response = await spotify.getPlaylistTracks(playlist.id);
 		var songs = response.items.map(song => song.track);
 
