@@ -1,3 +1,8 @@
+/**
+ * Controller for main game page. This is where code for communicating
+ * with the Socket server for playing the game resides.
+ */
+
 app.controller('GameController', function($scope, $routeParams, $location, $timeout, Player, Question, Song, spotify, $document) {
 
 	var playerData;
@@ -10,6 +15,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 	var init = function() {
 		playerData = JSON.parse(localStorage.getItem('playerData'));
 
+		// Reroutes player to login page if they aren't logged in
 		if (!playerData) {
 			$location.path('/');
 		}
@@ -18,11 +24,13 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		$scope.players = [];
 		gameStarted = false;
 
+		// Client asks to join room
 		socket = io('/game/' + $scope.roomId);
 		socket.emit('joinRoom', playerData);
 	}
 	init();
 
+	// For copying room ID to clipboard
 	$scope.copyToClipboard = function() {
 		const el = document.createElement('textarea');
 		el.value = $scope.roomId;
@@ -36,6 +44,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		socket.emit('startQuestion');
 	}
 
+	// Server message to load in current players of the game when joining
 	socket.on('currentPlayers', (playersObject) => {
 		var players = playersObject.map(player => Player.getPlayer(player));
 		players.forEach(player => {
@@ -43,24 +52,29 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		})
 	});
 
+	// Server message to add in new player
 	socket.on('newPlayer', (playerObject) => {
 		var player = Player.getPlayer(playerObject);
 		addPlayer(player);
 	});
 
+	// Server message that player left
 	socket.on('playerLeft', (socketId) => {
 		removePlayer(socketId);
 	});
 
+	// Server message to play song
 	socket.on('playSong', (songObject) => {
 		var song = new Song(song);
 		playSong(song);
 	});
 
+	// Server message to start question
 	socket.on('sendQuestion', (questionObject) => {
 		playQuestion(Question.getQuestion(questionObject));
 	});
 
+	// Server message to add points to given player
 	socket.on('addPoints', (socketId, seconds, choice) => {
 		var playerIndex = $scope.players.map(player => player.socketId).indexOf(socketId);
 		var score = $scope.players[playerIndex].addPoints(seconds, choice);
@@ -68,6 +82,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		$scope.$apply();
 	})
 
+	// Adds player to page
 	function addPlayer(player) {
 		if (player.socketId == socket.id) {
 			myPlayer = player;
@@ -81,6 +96,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		$scope.$apply();
 	}
 
+	// Removes player from page
 	function removePlayer(socketId) {
 		$scope.players = $scope.players.filter(player => player.socketId != socketId);
 		console.log('Player left: ' + socketId);
@@ -88,6 +104,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		toggleButton();
 	}
 
+	// Have start game button show only for the "host"
 	function toggleButton() {
 		if ($scope.players[0].socketId == socket.id && !gameStarted) {
 			$scope.showButton = true;
@@ -96,13 +113,14 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		}
 	}
 
+	// Plays given song (pauses previous song if needed)
 	function playSong(song) {
 		if (currentAudio) {
 			currentAudio.pause();
 		}
 		console.log('Playing song: ' + song.toString());
-		$scope.songImage = song.image;
-		$scope.song = song.toString();
+
+		// In case the song is unable to be played (i.e. no preview URL)
 		if (song.previewUrl) {
 			currentAudio = new Audio(song.previewUrl);
 			currentAudio.play();
@@ -113,6 +131,7 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		}
 	}
 
+	// Starts question for player and sets up scope for it
 	function playQuestion(question) {
 		playSong(question.song);
 		$scope.question = question.question;
@@ -121,6 +140,8 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 		$scope.choices = question.choices;
 		$scope.activeButtons = false;
 		$scope.counter = 30;
+
+		// Starts timer
 		$timeout.cancel(timer);
 		$scope.onTimeout = function() {
 			$scope.counter--;
@@ -132,15 +153,19 @@ app.controller('GameController', function($scope, $routeParams, $location, $time
 			}
 		}
 		timer = $timeout($scope.onTimeout, 1000);
+
 		$scope.$apply();
 		console.log('Starting question: ' + question.question);
 	}
 
+	// Helper method for when player answers
 	$scope.activateButtons = function(choiceIndex) {
 		if (!$scope.activeButtons) {
 			$timeout.cancel(timer);
 			$scope.activeButtons = true;
 			var choice = $scope.choices[choiceIndex];
+
+			// Plays audio for whether the answer is correct or not
 			var audio;
 			if ($scope.answers.includes(choice)) {
 				audio = new Audio('/wav/mixkit-correct-positive-answer-949.wav');

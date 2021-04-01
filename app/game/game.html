@@ -4,28 +4,58 @@
 
 	<table id="main-table">
 		<tr>
+
+			<!-- Where the game is actually played -->
 			<th id="game-window">
+
 				<button ng-click="startGame()" ng-show="showButton">Start Game</button>
+
 				<img ng-src="{{ questionImage }}" id="question-image">
+
 				<p id="question">{{ question }}</p>
+
 				<div id="choices-container">
-					<button data-ng-repeat="choice in choices track by $index" ng-class="activeButtons? (answers.includes(choice) ? 'correct-answer' : 'wrong-answer') : 'unknown-answer'" ng-click="activateButtons($index)" class="choice"><p>{{ choice }}</p></button>
-				</div>
-				<h2 id="timer">{{ counter }}</h2>
-			</th>
-			<td id="line-column"></td>
-			<td id="player-column">
-				<div>
-					<button id="room-id" ng-click="copyToClipboard()"
-							data-tooltip="Click to copy!">
-							<p>ROOM ID: {{ roomId }}</p>
+					<!-- Changes color when answer is chosen -->
+					<button
+						data-ng-repeat="choice in choices track by $index"
+						ng-class="activeButtons? (answers.includes(choice) ? 'correct-answer' : 'wrong-answer') : 'unknown-answer'"
+						ng-click="activateButtons($index)"
+						class="choice">
+
+						<p>{{ choice }}</p>
+
 					</button>
 				</div>
+
+				<h2 id="timer">{{ counter }}</h2>
+
+			</th>
+
+			<td id="line-column"></td>
+
+			<!-- Where the players are seen -->
+			<td id="player-column">
+
+				<div>
+					<!-- Copies room ID to clipboard by clicking -->
+					<button
+						id="room-id"
+						ng-click="copyToClipboard()"
+						data-tooltip="Click to copy!">
+
+						<p>ROOM ID: {{ roomId }}</p>
+
+					</button>
+				</div>
+
+				<!-- Iterates through players -->
 				<span data-ng-repeat="player in players track by $index" class="player">
 					<img ng-src="{{ player.profileImage}}" class="profile-image">
 					<span class="player-name">{{ player.name }}</span>
 				</span>
+
 			</td>
+
 		</tr>
 	</table>
 </div>
